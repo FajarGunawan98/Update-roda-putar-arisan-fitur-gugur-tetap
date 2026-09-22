@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Undian Arisan</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c8283f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Undian Arisan">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eef6f2;
+    --bg2: #d9eee5;
+    --card: #ffffff;
+    --input: #f5faf8;
+    --ink: #12302b;
+    --muted: #4f6f68;
+    --line: #cfe3db;
+    --row: #f2f8f5;
+    --accent: #c8283f;
+    --accent-2: #e04058;
+    --accent-3: #8f1a2c;
+    --res-red: #d4101a;
+    --res-text: #d4101a;
+    --gold: #f2b01e;
+    --gold-2: #ffd766;
+    --gold-ink: #4a3300;
+    --globe-a: #e6f6f1;
+    --globe-b: #9fd3c6;
+    --shadow: 0 12px 32px rgba(18, 48, 43, .14);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #061d1b;
+      --bg2: #0b2f2b;
+      --card: #0f3a35;
+      --input: #0a2c28;
+      --ink: #f4eddc;
+      --muted: #9cc0b7;
+      --line: #1f524b;
+      --row: #0b2f2b;
+      --accent: #ff5a70;
+      --accent-2: #ff7a8b;
+      --accent-3: #a82339;
+      --res-red: #c21420;
+      --res-text: #ff6b78;
+      --gold: #ffc933;
+      --gold-2: #ffe08a;
+      --globe-a: #1d6b61;
+      --globe-b: #04191b;
+      --shadow: 0 12px 32px rgba(0, 0, 0, .4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #061d1b;
+    --bg2: #0b2f2b;
+    --card: #0f3a35;
+    --input: #0a2c28;
+    --ink: #f4eddc;
+    --muted: #9cc0b7;
+    --line: #1f524b;
+    --row: #0b2f2b;
+    --accent: #ff5a70;
+    --accent-2: #ff7a8b;
+    --accent-3: #a82339;
+    --res-red: #c21420;
+    --res-text: #ff6b78;
+    --gold: #ffc933;
+    --gold-2: #ffe08a;
+    --globe-a: #1d6b61;
+    --globe-b: #04191b;
+    --shadow: 0 12px 32px rgba(0, 0, 0, .4);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *, *::before, *::after { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    background-image: radial-gradient(1200px 500px at 50% -10%, var(--bg2), transparent 70%);
+    background-repeat: no-repeat;
+    color: var(--ink);
+    font-family: 'Fredoka', ui-rounded, 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.4;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 14px 14px 48px; }
+  .app-footer { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 24px; opacity: .75; }
+
+  /* ---------- header ---------- */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  h1 { margin: 0; font-size: clamp(1.35rem, 5vw, 2.1rem); font-weight: 700; line-height: 1.1; overflow-wrap: anywhere; flex: 1 1 200px; min-width: 0; }
+  h2 { margin: 0 0 12px; font-size: 1.2rem; font-weight: 600; }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .chip-btn {
+    font: inherit; font-weight: 500; font-size: .95rem; color: var(--ink);
+    background: var(--card); border: 2px solid var(--line); border-radius: 999px;
+    padding: 8px 14px; cursor: pointer; min-height: 40px;
+  }
+  .chip-btn:hover { border-color: var(--gold); }
+  .chip-btn.warn { border-color: var(--accent); color: var(--accent); }
+  .chip-btn[aria-expanded="true"] { border-color: var(--gold); background: var(--row); }
+  :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: 18px;
+    min-width: 0;
+  }
+
+  /* ---------- dashboard anggota ---------- */
+  .roster { max-width: 620px; margin: 0 auto 14px; }
+  .roster-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+  .roster-head h2 { margin: 0; }
+  .roster-add { display: flex; gap: 8px; margin: 12px 0; }
+  .roster-add input { flex: 1 1 auto; }
+  .roster-list { display: grid; gap: 8px; max-height: 46vh; overflow-y: auto; margin-top: 4px; }
+  .roster-row {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: var(--row); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px;
+  }
+  .roster-name { font-weight: 600; flex: 1 1 120px; min-width: 0; overflow-wrap: anywhere; }
+  .roster-badge { font-size: .8rem; font-weight: 500; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+  .roster-badge.aktif { background: rgba(143, 26, 44, .1); color: var(--accent-3); }
+  .roster-badge.pending { background: rgba(242, 176, 30, .18); color: var(--gold-ink); }
+  .roster-badge.selesai { background: rgba(24, 140, 96, .16); color: #16794f; }
+  @media (prefers-color-scheme: dark) { .roster-badge.selesai { color: #7fe8bd; } }
+  :root[data-theme="dark"] .roster-badge.selesai { color: #7fe8bd; }
+  .roster-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip-btn.small { padding: 6px 12px; min-height: 32px; font-size: .85rem; }
+
+  /* ---------- setup ---------- */
+  .setup { max-width: 620px; margin: 0 auto; }
+  .setup > label { display: flex; justify-content: space-between; align-items: baseline; font-weight: 500; margin: 14px 0 6px; }
+  .setup > label:first-of-type { margin-top: 0; }
+  .count { color: var(--muted); font-weight: 400; font-size: .92rem; }
+  input[type=text], textarea {
+    width: 100%; font: inherit; font-size: 16px; color: var(--ink);
+    background: var(--input); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px;
+  }
+  textarea { resize: vertical; min-height: 170px; line-height: 1.5; }
+  input[type=text]:focus, textarea:focus { outline: none; border-color: var(--gold); }
+  .hint { color: var(--muted); font-size: .92rem; margin: 10px 0 0; }
+  .err { color: var(--accent); font-weight: 500; min-height: 1.4em; margin: 8px 0 0; }
+  .btn-row { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .btn-row .btn { flex: 1 1 160px; }
+
+  /* ---------- pengaturan ---------- */
+  .settings { border: 2px dashed var(--line); border-radius: 18px; padding: 6px 14px 14px; margin-top: 16px; background: var(--row); }
+  .settings h3 { margin: 10px 0 0; font-size: 1.02rem; font-weight: 600; }
+  .set-row { display: grid; gap: 6px; margin-top: 12px; }
+  .set-row > label, .set-row > .lbl { display: flex; justify-content: space-between; gap: 8px; font-weight: 500; font-size: .95rem; }
+  .set-row output { color: var(--muted); font-weight: 500; }
+  .set-note { color: var(--muted); font-size: .84rem; margin: -2px 0 0; }
+  input[type=range] { width: 100%; height: 30px; accent-color: var(--accent); margin: 0; }
+  .seg {
+    display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; padding: 3px;
+    background: var(--card); border: 2px solid var(--line); border-radius: 13px;
+  }
+  .seg button {
+    font: inherit; font-size: .92rem; font-weight: 500; border: 0; border-radius: 10px; padding: 8px 6px;
+    background: transparent; color: var(--ink); cursor: pointer; min-height: 38px;
+  }
+  .seg button[aria-pressed="true"] { background: var(--gold); color: var(--gold-ink); font-weight: 600; }
+  #settingsSlotDraw { margin-bottom: 14px; }
+  #settingsSlotDraw .settings { margin-top: 0; }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    font: inherit; font-weight: 600; font-size: 1.05rem; border: 0; border-radius: 16px;
+    padding: 14px 22px; cursor: pointer; min-height: 52px; transition: transform .08s, box-shadow .08s;
+  }
+  .btn.primary {
+    color: #fff; background: linear-gradient(180deg, var(--accent-2), var(--accent));
+    box-shadow: 0 5px 0 var(--accent-3), 0 12px 22px rgba(200, 40, 63, .28);
+  }
+  .btn.gold {
+    color: var(--gold-ink); background: linear-gradient(180deg, var(--gold-2), var(--gold));
+    box-shadow: 0 5px 0 #a87400, 0 12px 22px rgba(242, 176, 30, .38);
+  }
+  .btn.ghost { color: var(--ink); background: var(--row); border: 2px solid var(--line); }
+  .btn:active:not([disabled]) { transform: translateY(4px); }
+  .btn.primary:active:not([disabled]) { box-shadow: 0 1px 0 var(--accent-3), 0 6px 12px rgba(200, 40, 63, .25); }
+  .btn.gold:active:not([disabled]) { box-shadow: 0 1px 0 #a87400, 0 6px 12px rgba(242, 176, 30, .3); }
+  .btn[disabled] { opacity: .65; cursor: not-allowed; }
+  .btn.big { width: 100%; font-size: 1.2rem; min-height: 58px; }
+
+  /* ---------- draw layout ---------- */
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  @media (min-width: 900px) {
+    .layout { grid-template-columns: minmax(0, 1fr) 360px; align-items: start; }
+    .results { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow: auto; }
+  }
+  .stage { display: flex; flex-direction: column; gap: 14px; align-items: stretch; }
+
+  /* ticker */
+  .ticker {
+    display: flex; align-items: center; gap: 12px; min-height: 70px;
+    background: #0a1f1d; border: 3px solid var(--gold); border-radius: 20px; padding: 8px 14px 8px 8px;
+    box-shadow: inset 0 0 24px rgba(0, 0, 0, .55), 0 0 0 4px rgba(242, 176, 30, .15);
+    overflow: hidden;
+  }
+  .tk-tag {
+    flex: 0 0 auto; width: 62px; height: 54px; border-radius: 14px; display: grid; place-items: center; align-content: center;
+    background: linear-gradient(180deg, var(--gold-2), var(--gold)); color: var(--gold-ink); line-height: 1;
+  }
+  .tk-tag small { font-size: .68rem; font-weight: 500; }
+  .tk-tag b { font-size: 1.6rem; font-weight: 700; }
+  .tk-name {
+    flex: 1; min-width: 0; text-align: center; color: var(--gold-2); font-weight: 600;
+    font-size: clamp(1.4rem, 6vw, 2.2rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    text-shadow: 0 0 14px rgba(255, 200, 60, .55);
+  }
+  .tk-name.flip { animation: flip .12s ease-out; }
+  .ticker.wait .tk-name { font-size: clamp(1.1rem, 4.5vw, 1.5rem); font-weight: 500; opacity: .85; }
+  .ticker.locked { animation: lock .7s ease-out; border-color: #fff3c4; }
+  .ticker.locked .tk-name { color: #fff; text-shadow: 0 0 18px rgba(255, 220, 110, .95); }
+  @keyframes flip { from { transform: translateY(45%); opacity: .2; } to { transform: none; opacity: 1; } }
+  @keyframes lock {
+    0% { box-shadow: inset 0 0 24px rgba(0, 0, 0, .55), 0 0 0 4px rgba(242, 176, 30, .15); }
+    30% { box-shadow: inset 0 0 24px rgba(0, 0, 0, .3), 0 0 0 10px rgba(255, 224, 138, .55), 0 0 40px rgba(255, 200, 60, .8); }
+    100% { box-shadow: inset 0 0 24px rgba(0, 0, 0, .55), 0 0 0 4px rgba(242, 176, 30, .15); }
+  }
+
+  /* globe */
+  .globe-wrap { position: relative; width: 100%; max-width: 460px; margin: 0 auto; }
+  .globe-wrap canvas { display: block; margin: 0 auto; max-width: 100%; }
+  .globe-wrap.spinning canvas { animation: glow .9s ease-in-out infinite alternate; }
+  @keyframes glow {
+    from { filter: drop-shadow(0 0 8px rgba(242, 176, 30, .45)); }
+    to { filter: drop-shadow(0 0 26px rgba(255, 90, 112, .6)); }
+  }
+  .done-actions { display: grid; gap: 10px; }
+
+  /* ---------- tabel hasil (ringkas) ---------- */
+  .results { padding: 0; overflow: hidden; }
+  .res-head {
+    background: var(--res-red); color: #fff; text-align: center; padding: 9px 12px 8px;
+    font-family: 'Oswald', 'Arial Narrow', Impact, sans-serif; letter-spacing: .1px;
+  }
+  .res-title { font-size: 1.05rem; font-weight: 600; line-height: 1.2; overflow-wrap: anywhere; }
+  .res-date { font-size: .8rem; font-weight: 500; opacity: .92; margin-top: 2px; }
+  .res-body { padding: 10px; }
+  .prz-box { border: 1px solid var(--line); border-bottom: 0; }
+  .prz { display: grid; grid-template-columns: 40% minmax(0, 1fr); border-bottom: 1px solid var(--line); }
+  .prz .lbl {
+    background: var(--res-red); color: #fff; text-align: center; padding: 6px 6px;
+    font-family: 'Oswald', 'Arial Narrow', Impact, sans-serif; font-weight: 500; font-size: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, .3); display: grid; place-items: center;
+  }
+  .prz:last-child .lbl { border-bottom: 0; }
+  .prz .val {
+    display: grid; place-items: center; padding: 5px 8px; background: var(--card); color: var(--muted);
+    font-weight: 600; font-size: 1.02rem; min-width: 0; text-align: center;
+  }
+  .prz .val span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prz.filled .val { color: var(--ink); }
+  .prz[data-pos="1"] .lbl { padding: 9px 6px; }
+  .prz[data-pos="1"].filled .val { color: var(--res-text); font-size: 1.4rem; font-weight: 700; }
+  .band {
+    background: var(--res-red); color: #fff; text-align: center; padding: 5px 6px; margin-top: 8px;
+    font-family: 'Oswald', 'Arial Narrow', Impact, sans-serif; font-weight: 500; font-size: 1rem;
+  }
+  .prz-box + .band { margin-top: 8px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-left: 1px solid var(--line); border-top: 1px solid var(--line); }
+  .cell {
+    background: var(--row); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    padding: 5px 4px 6px; text-align: center; min-height: 48px; min-width: 0;
+    display: flex; flex-direction: column; justify-content: center; gap: 2px; border-left: 4px solid transparent;
+  }
+  .cell .cn { font-size: .66rem; color: var(--muted); line-height: 1; font-weight: 500; }
+  .cell .cw {
+    font-weight: 600; font-size: .84rem; line-height: 1.12; color: var(--muted);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere;
+  }
+  .cell.filled .cw { color: var(--ink); }
+  .cell.blank { visibility: hidden; }
+  .cell.active { box-shadow: inset 0 0 0 2px var(--gold); animation: pulse 1.3s ease-in-out infinite; }
+  .prz.active .val { box-shadow: inset 0 0 0 2px var(--gold); animation: pulse 1.3s ease-in-out infinite; }
+  .pop { animation: pop .6s cubic-bezier(.2, 1.4, .4, 1); }
+  @keyframes pulse { 50% { background-color: rgba(242, 176, 30, .22); } }
+  @keyframes pop { 0% { transform: scale(.85); } 100% { transform: scale(1); } }
+
+  #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .globe-wrap.spinning canvas, .cell.active, .prz.active .val, .ticker.locked { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 id="appTitle">Undian Arisan</h1>
+    <div class="tools">
+      <button class="chip-btn" id="btnRoster" type="button" aria-expanded="false">Dashboard Anggota</button>
+      <button class="chip-btn" id="btnSound" type="button" aria-label="Suara aktif" title="Suara">🔊</button>
+      <button class="chip-btn" id="btnSettings" type="button" aria-expanded="false" hidden>Pengaturan</button>
+      <button class="chip-btn" id="btnReset" type="button" hidden>Ulang</button>
+    </div>
+  </header>
+
+  <!-- ===== dashboard anggota ===== -->
+  <section id="viewRoster" class="card roster" hidden>
+    <div class="roster-head">
+      <h2>Dashboard Admin — Status Anggota</h2>
+      <button class="chip-btn" id="btnRosterClose" type="button">Tutup</button>
+    </div>
+    <p class="hint">Anggota yang <b>belum menang</b> atau <b>menang tapi belum WD</b> otomatis tersedia untuk undian selanjutnya. Anggota yang sudah WD dianggap selesai dan tidak diikutkan lagi.</p>
+    <div class="roster-add">
+      <input id="rosterNewName" type="text" placeholder="Tambah nama anggota baru" maxlength="40" autocomplete="off">
+      <button class="btn ghost" id="btnRosterAdd" type="button">Tambah</button>
+    </div>
+    <div id="rosterList" class="roster-list"></div>
+    <p class="err" id="rosterErr" role="alert"></p>
+    <div class="btn-row">
+      <button class="btn primary" id="btnRosterUseNext" type="button">Pakai untuk undian selanjutnya</button>
+    </div>
+  </section>
+
+  <!-- ===== setup ===== -->
+  <section id="viewSetup" class="card setup">
+    <h2>Siapkan undian</h2>
+    <label for="inTitle">Nama arisan</label>
+    <input id="inTitle" type="text" maxlength="40" placeholder="Contoh: Arisan Keluarga RT 05" autocomplete="off">
+    <label for="inNames">Daftar anggota <span class="count" id="nameCount">0 anggota</span></label>
+    <textarea id="inNames" placeholder="Satu nama per baris, atau pisahkan dengan koma&#10;Siti&#10;Budi&#10;Ani"></textarea>
+    <p class="hint" id="setupHint">Undian dimulai dari nomor terakhir, lalu turun sampai Prize 1.</p>
+
+    <div id="settingsSlotSetup">
+      <div class="settings" id="settingsBox">
+        <h3>Pengaturan putaran</h3>
+        <div class="set-row">
+          <span class="lbl">Tampilan putaran</span>
+          <div class="seg" data-key="view">
+            <button type="button" data-v="wheel">Roda nama</button>
+            <button type="button" data-v="globe">Globe bola</button>
+          </div>
+        </div>
+        <div class="set-row">
+          <label for="stDur">Durasi putaran <output id="stDurV"></output></label>
+          <input id="stDur" type="range" min="3" max="30" step="1">
+        </div>
+        <div class="set-row">
+          <label for="stSpeed">Kecepatan putaran <output id="stSpeedV"></output></label>
+          <input id="stSpeed" type="range" min="1" max="10" step="1">
+        </div>
+        <div class="set-row">
+          <span class="lbl">Arah putaran</span>
+          <div class="seg" data-key="dir">
+            <button type="button" data-v="1">Searah jarum jam</button>
+            <button type="button" data-v="-1">Berlawanan</button>
+          </div>
+        </div>
+        <div class="set-row" id="rowStyle">
+          <span class="lbl">Gaya bola di globe</span>
+          <div class="seg" data-key="style">
+            <button type="button" data-v="roulette">Roulette</button>
+            <button type="button" data-v="lotto">Kocok acak</button>
+          </div>
+          <p class="set-note">Roulette: bola mengelilingi kaca lalu melambat dan jatuh. Kocok: bola ditiup acak seperti mesin lotto.</p>
+        </div>
+        <div class="set-row">
+          <span class="lbl">Cara undian</span>
+          <div class="seg" data-key="auto">
+            <button type="button" data-v="false">Manual</button>
+            <button type="button" data-v="true">Otomatis</button>
+          </div>
+        </div>
+        <div class="set-row" id="rowPause">
+          <label for="stPause">Jeda antar nomor (otomatis) <output id="stPauseV"></output></label>
+          <input id="stPause" type="range" min="1" max="20" step="1">
+        </div>
+        <div class="set-row">
+          <span class="lbl">Logika undian</span>
+          <div class="seg" data-key="drawMode">
+            <button type="button" data-v="gugur">Sistem Gugur</button>
+            <button type="button" data-v="ulang">Tetap Berpeluang</button>
+          </div>
+          <p class="set-note">Sistem Gugur: nama yang sudah kepilih langsung keluar dari mesin, tidak diundi lagi. Tetap Berpeluang: nama yang sudah dapat Starter atau Prize tetap ikut diputar, jadi masih ada harapan menang Prize 1.</p>
+        </div>
+        <div class="set-row">
+          <label for="stPrize">Jumlah Prize <output id="stPrizeV"></output></label>
+          <input id="stPrize" type="range" min="1" max="10" step="1">
+          <p class="set-note">Anggota di luar Prize otomatis masuk Starter Prize, jumlah kotaknya menyesuaikan.</p>
+        </div>
+        <div class="set-row">
+          <span class="lbl">Kotak Starter Prize</span>
+          <div class="seg" data-key="starterMode">
+            <button type="button" data-v="all">Semua sisa</button>
+            <button type="button" data-v="fixed">Tentukan sendiri</button>
+          </div>
+        </div>
+        <div class="set-row" id="rowStarters">
+          <label for="stStart">Jumlah kotak Starter <output id="stStartV"></output></label>
+          <input id="stStart" type="range" min="0" max="30" step="1">
+        </div>
+        <p class="set-note" id="slotSummary"></p>
+      </div>
+    </div>
+
+    <p class="err" id="setupErr" role="alert"></p>
+    <div class="btn-row">
+      <button class="btn ghost" id="btnSample" type="button">Isi contoh 10 nama</button>
+      <button class="btn ghost" id="btnShuffleNames" type="button">🔀 Acak urutan nama</button>
+      <button class="btn primary" id="btnStart" type="button">Mulai undian</button>
+    </div>
+  </section>
+
+  <!-- ===== draw ===== -->
+  <section id="viewDraw" hidden>
+    <div id="settingsSlotDraw" hidden></div>
+    <div class="layout">
+      <div class="card stage">
+        <div class="ticker wait" id="ticker" aria-live="polite">
+          <div class="tk-tag"><small id="tkLabel">Nomor</small><b id="tkNum">10</b></div>
+          <div class="tk-name" id="tkName">Siap diputar</div>
+        </div>
+        <div class="globe-wrap" id="globeWrap"><canvas id="globe" aria-label="Globe kaca berisi bola nama anggota arisan"></canvas></div>
+        <button class="btn primary big" id="btnSpin" type="button">Putar</button>
+        <div class="done-actions" id="doneActions" hidden>
+          <button class="btn gold big" id="btnCopy" type="button">Salin hasil undian</button>
+        </div>
+      </div>
+      <aside class="card results" aria-label="Hasil undian">
+        <div class="res-head">
+          <div class="res-title" id="resTitle">Live draw</div>
+          <div class="res-date" id="resDate"></div>
+        </div>
+        <div class="res-body" id="resBody"></div>
+      </aside>
+    </div>
+  </section>
+  <footer class="app-footer">© <span id="footerYear"></span> jyschackdev</footer>
+</div>
+<canvas id="fx"></canvas>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (s) => document.querySelector(s);
+  const TAU = Math.PI * 2;
+  const STORE_KEY = 'undian-arisan-v1';
+  const CFG_KEY = 'undian-arisan-cfg-v1';
+  const MAX_NAMES = 50;
+  const FONT = 'Fredoka, ui-rounded, "Segoe UI", system-ui, sans-serif';
+  const HUES = [352, 22, 44, 58, 96, 132, 206, 226, 262, 292, 322, 8];
+  const DAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const MONTHS = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const clamp01 = (v) => Math.max(0, Math.min(1, v));
+
+  /* ================= state & pengaturan ================= */
+  let state = { title: 'Undian Arisan', names: [], results: {}, active: false, date: Date.now() };
+  let soundOn = true;
+  const CFG_DEF = { view: 'wheel', duration: 8, style: 'roulette', speed: 6, dir: 1, auto: false, pause: 4, prizes: 3, starterMode: 'all', starters: 4, drawMode: 'gugur' };
+  let cfg = Object.assign({}, CFG_DEF);
+
+  function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(STORE_KEY));
+      if (s && Array.isArray(s.names)) { state = Object.assign(state, s); state.results = state.results || {}; }
+    } catch (e) {}
+  }
+  function saveCfg() { try { localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); } catch (e) {} }
+  function loadCfg() {
+    try { const c = JSON.parse(localStorage.getItem(CFG_KEY)); if (c && typeof c === 'object') cfg = Object.assign({}, CFG_DEF, c); } catch (e) {}
+  }
+
+  /* ================= dashboard anggota (roster lintas undian) ================= */
+  const ROSTER_KEY = 'undian-arisan-roster-v1';
+  let roster = {}; // { nama: { menang: bool, wd: bool, wonAt: number|null, wonTitle: string } }
+  function loadRoster() {
+    try { const r = JSON.parse(localStorage.getItem(ROSTER_KEY)); if (r && typeof r === 'object') roster = r; } catch (e) {}
+  }
+  function saveRoster() { try { localStorage.setItem(ROSTER_KEY, JSON.stringify(roster)); } catch (e) {} }
+  function ensureRoster(names) {
+    let changed = false;
+    names.forEach((nm) => { if (!roster[nm]) { roster[nm] = { menang: false, wd: false, wonAt: null }; changed = true; } });
+    if (changed) saveRoster();
+  }
+  function markWon(name) {
+    if (!roster[name]) roster[name] = { menang: false, wd: false, wonAt: null };
+    roster[name].menang = true; roster[name].wonAt = Date.now(); roster[name].wonTitle = state.title;
+    saveRoster();
+  }
+  function rosterStatus(name) {
+    const r = roster[name]; if (!r) return 'aktif';
+    if (r.menang && r.wd) return 'selesai';
+    if (r.menang && !r.wd) return 'pending';
+    return 'aktif';
+  }
+  function eligibleNext() { return Object.keys(roster).filter((nm) => rosterStatus(nm) !== 'selesai'); }
+
+  const total = () => state.names.length;
+  const starterCount = () => {
+    const restAll = Math.max(0, total() - cfg.prizes);
+    return cfg.starterMode === 'fixed' ? Math.min(cfg.starters, restAll) : restAll;
+  };
+  const slots = () => Math.min(total(), cfg.prizes + starterCount());
+  const drawnNames = () => Object.values(state.results);
+  // sistem gugur: nama yang sudah kepilih dibuang dari kolam undian.
+  // tetap berpeluang: kolam undian selalu berisi semua anggota, nama yang sudah dapat
+  // Starter/Prize tetap ikut diputar sampai ada yang menang Prize 1.
+  const remaining = () => {
+    if (cfg.drawMode === 'ulang') return state.names.slice();
+    const d = new Set(drawnNames()); return state.names.filter((n) => !d.has(n));
+  };
+  const curPos = () => slots() - drawnNames().length;
+  const isDone = () => slots() > 0 && drawnNames().length >= slots();
+
+  function rnd(n) {
+    try { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; }
+    catch (e) { return Math.floor(Math.random() * n); }
+  }
+  function shuffle(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  // Acak array tapi hindari nama yang sama persis saling berdempetan (mis. dua "Budi" bersebelahan).
+  function shuffleNoAdjacent(arr) {
+    const key = (s) => s.trim().toLowerCase();
+    let a = shuffle(arr);
+    for (let pass = 0; pass < 200; pass++) {
+      let clean = true;
+      for (let i = 1; i < a.length; i++) {
+        if (key(a[i]) !== key(a[i - 1])) continue;
+        clean = false;
+        let swapIdx = -1;
+        for (let j = i + 1; j < a.length; j++) {
+          if (key(a[j]) !== key(a[i]) && key(a[j]) !== key(a[i - 1])) { swapIdx = j; break; }
+        }
+        if (swapIdx === -1) {
+          for (let j = 0; j < i - 1; j++) {
+            if (key(a[j]) !== key(a[i]) && key(a[j]) !== key(a[i - 1])) { swapIdx = j; break; }
+          }
+        }
+        if (swapIdx !== -1) [a[i], a[swapIdx]] = [a[swapIdx], a[i]];
+      }
+      if (clean) break;
+    }
+    return a;
+  }
+
+  /* ================= sound ================= */
+  let actx = null;
+  function ac() {
+    try {
+      if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      return actx;
+    } catch (e) { return null; }
+  }
+  function beep(freq, dur, type, vol, delay, freqEnd) {
+    if (!soundOn) return;
+    const a = ac(); if (!a) return;
+    try {
+      const t = a.currentTime + (delay || 0);
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = type || 'sine';
+      o.frequency.setValueAtTime(freq, t);
+      if (freqEnd) o.frequency.exponentialRampToValueAtTime(freqEnd, t + dur);
+      g.gain.setValueAtTime(vol || 0.05, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(a.destination);
+      o.start(t); o.stop(t + dur + 0.03);
+    } catch (e) {}
+  }
+  const sndTick = (u) => beep(520 + 420 * u, 0.045, 'triangle', 0.06);
+  const sndWhoosh = () => beep(180, 0.7, 'sawtooth', 0.025, 0, 900);
+  function sndReveal(final) {
+    const notes = final ? [523, 659, 784, 1047, 1319, 1568] : [523, 659, 784];
+    notes.forEach((f, i) => beep(f, 0.32, 'triangle', 0.07, i * 0.11));
+    if (final) beep(1047, 0.9, 'sine', 0.06, notes.length * 0.11);
+  }
+
+  /* ================= confetti ================= */
+  const fx = $('#fx'), fctx = fx.getContext('2d');
+  let parts = [], fxRunning = false, rainUntil = 0, fxDpr = 1, lastFx = 0;
+  const CONF = ['#ff5a70', '#ffc933', '#3ecf8e', '#4aa8ff', '#b06cff', '#ff9d3c', '#ffffff'];
+  function fxResize() {
+    fxDpr = Math.min(window.devicePixelRatio || 1, 2);
+    fx.width = Math.round(innerWidth * fxDpr); fx.height = Math.round(innerHeight * fxDpr);
+    fctx.setTransform(fxDpr, 0, 0, fxDpr, 0, 0);
+  }
+  function burst(x, y, n, power, up) {
+    for (let i = 0; i < n; i++) {
+      const a = up ? (-Math.PI / 2 + (Math.random() - 0.5) * 1.6) : Math.random() * TAU;
+      const sp2 = (0.35 + Math.random() * 0.65) * power;
+      parts.push({ x, y, vx: Math.cos(a) * sp2, vy: Math.sin(a) * sp2, w: 5 + Math.random() * 6, h: 8 + Math.random() * 9,
+        rot: Math.random() * TAU, vr: (Math.random() - 0.5) * 12, c: CONF[rnd(CONF.length)], life: 1, dec: 0.22 + Math.random() * 0.2 });
+    }
+    startFx();
+  }
+  function startFx() { if (!fxRunning) { fxRunning = true; lastFx = performance.now(); requestAnimationFrame(fxFrame); } }
+  function fxFrame(now) {
+    const dt = Math.min(0.04, (now - lastFx) / 1000); lastFx = now;
+    if (now < rainUntil) {
+      for (let i = 0; i < 4; i++) parts.push({ x: Math.random() * innerWidth, y: -12, vx: (Math.random() - 0.5) * 120, vy: 120 + Math.random() * 220,
+        w: 5 + Math.random() * 6, h: 8 + Math.random() * 9, rot: Math.random() * TAU, vr: (Math.random() - 0.5) * 12, c: CONF[rnd(CONF.length)], life: 1, dec: 0.12 });
+    }
+    fctx.clearRect(0, 0, innerWidth, innerHeight);
+    parts = parts.filter((p) => p.life > 0 && p.y < innerHeight + 30);
+    for (const p of parts) {
+      p.vy += 900 * dt; p.vx *= (1 - 0.9 * dt); p.vy *= (1 - 0.4 * dt);
+      p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; p.life -= p.dec * dt;
+      fctx.save(); fctx.translate(p.x, p.y); fctx.rotate(p.rot);
+      fctx.globalAlpha = Math.max(0, Math.min(1, p.life * 2));
+      fctx.fillStyle = p.c; fctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); fctx.restore();
+    }
+    if (parts.length || now < rainUntil) requestAnimationFrame(fxFrame);
+    else { fxRunning = false; fctx.clearRect(0, 0, innerWidth, innerHeight); }
+  }
+
+  /* ================= globe engine ================= */
+  const cv = $('#globe'), ctx = cv.getContext('2d');
+  const wrap = $('#globeWrap');
+  let S = 360, W = 360, H = 382, R = 148, cx = 180, cy = 180, dpr = 1, WR = 158;
+  let balls = [], leaving = [];
+  let sp = null;       // sesi putaran aktif
+  let rv = null;       // animasi reveal bola terpilih
+  let busy = false;
+  let cageAng = 0;     // sudut pita roulette di tepi kaca
+  let theme = { a: '#e6f6f1', b: '#9fd3c6' };
+  let running = false;
+  let autoRun = false, autoNextAt = 0, lastCd = -1;
+  let wheel = null;
+  const wRatio = new Map();
+
+  function readTheme() {
+    const cs = getComputedStyle(document.documentElement);
+    theme.a = cs.getPropertyValue('--globe-a').trim() || theme.a;
+    theme.b = cs.getPropertyValue('--globe-b').trim() || theme.b;
+  }
+
+  function measureRatio(text) { ctx.font = '600 100px ' + FONT; return ctx.measureText(text).width / 100; }
+  function fitK(lines) {
+    const wmax = Math.max(...lines.map(measureRatio));
+    const kw = 1.62 / wmax, kh = 1.5 / (lines.length * 1.12), cap = lines.length === 1 ? 0.66 : 0.5;
+    return Math.min(kw, kh, cap);
+  }
+  function bestLabel(name) {
+    const words = name.trim().split(/\s+/);
+    let best = { lines: [name], k: fitK([name]) };
+    if (words.length > 1) {
+      let split = null;
+      for (let i = 1; i < words.length; i++) {
+        const a = words.slice(0, i).join(' '), b = words.slice(i).join(' ');
+        const k = fitK([a, b]);
+        if (!split || k > split.k) split = { lines: [a, b], k };
+      }
+      if (split.k > best.k) best = split;
+      if (best.k < 0.3) { const f = { lines: [words[0]], k: fitK([words[0]]) }; if (f.k > best.k) best = f; }
+    }
+    if (best.k < 0.3) {
+      let t = words[0];
+      while (t.length > 2 && fitK([t + '…']) < 0.3) t = t.slice(0, -1);
+      best = { lines: [t + '…'], k: fitK([t + '…']) };
+    }
+    return best;
+  }
+
+  function colorFor(i) {
+    const h = HUES[i % HUES.length];
+    const round = Math.floor(i / HUES.length);
+    const l = round % 2 ? 44 : 52;
+    return { c: `hsl(${h},78%,${l}%)`, light: `hsl(${h},92%,${l + 20}%)`, dark: `hsl(${h},70%,${l - 22}%)`, solid: `hsl(${h},72%,${l - 4}%)` };
+  }
+  const colorOf = (name) => colorFor(Math.max(0, state.names.indexOf(name)));
+
+  function ballR() { return Math.max(R * 0.085, Math.min(R * 0.2, R * Math.sqrt(0.36 / Math.max(1, total())))); }
+
+  function makeBall(name) {
+    const col = colorOf(name);
+    const r = ballR();
+    const a = rnd(10000) / 10000 * TAU, d = Math.sqrt(rnd(10000) / 10000) * (R - r) * 0.85;
+    return { name, x: cx + Math.cos(a) * d, y: cy + Math.sin(a) * d, vx: 0, vy: 0, r, ang: rnd(628) / 100, av: 0,
+      c: col.c, cLight: col.light, cDark: col.dark, label: bestLabel(name), hot: false, glow: false, chosen: false, alpha: 1 };
+  }
+
+  function resize() {
+    const avail = Math.floor(wrap.clientWidth || 0);
+    if (!avail) return;
+    const oldR = R, oldCx = cx, oldCy = cy;
+    S = Math.min(avail, 460); W = S; H = Math.round(S * (cfg.view === 'wheel' ? 1 : 1.06)); WR = S * 0.44;
+    dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    R = S * 0.41; cx = S / 2; cy = S * 0.5;
+    if (oldR > 0 && Math.abs(oldR - R) > 0.5) {
+      const k = R / oldR;
+      for (const b of balls.concat(leaving.map((l) => l.b))) {
+        b.x = cx + (b.x - oldCx) * k; b.y = cy + (b.y - oldCy) * k; b.vx *= k; b.vy *= k; b.r *= k;
+      }
+      if (rv) { rv.r1 *= k; rv.x0 = cx + (rv.x0 - oldCx) * k; rv.y0 = cy + (rv.y0 - oldCy) * k; rv.r0 *= k; }
+    }
+  }
+
+  /* ---------- easing ---------- */
+  const easeOutCubic = (p) => 1 - Math.pow(1 - p, 3);
+  const easeInOut = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  const easeOutBack = (p) => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); };
+  const norm = (a) => ((a + Math.PI) % TAU + TAU) % TAU - Math.PI;
+
+  /* ---------- kontrol putaran (durasi, gaya, kecepatan, arah) ---------- */
+  function makeCtl(now) {
+    const dir = cfg.dir;
+    if (cfg.style === 'roulette') {
+      // kaca berputar seperti roda roulette: naik -> tahan -> melambat -> bola jatuh
+      const wmax = 0.6 + 0.5 * (cfg.speed - 1), widle = 0.45;
+      let om = widle;
+      if (sp) {
+        const e = (now - sp.t0) / 1000, D = sp.T / 1000, hold = D * 0.5;
+        if (e < hold) om = widle + (wmax - widle) * easeInOut(Math.min(1, e / 1.2));
+        else om = wmax + (0.3 - wmax) * easeInOut(Math.min(1, (e - hold) / (D - hold)));
+      }
+      return { stir: 0.15, omega: dir * om, dir, w: clamp01((om - 0.8) / 1.2) };
+    }
+    // kocok acak ala mesin lotto
+    let stir = 0.5;
+    if (sp) {
+      const e = (now - sp.t0) / 1000, D = sp.T / 1000;
+      stir = 0.5 + 0.5 * easeOutCubic(Math.min(1, e / 0.6));
+      const tailStart = D * 0.6, tail = Math.max(0, (e - tailStart) / (D - tailStart));
+      if (tail > 0) stir = 1 - 0.35 * Math.min(1, tail);
+    }
+    const f = 0.4 + 0.1 * cfg.speed; // kecepatan memengaruhi seberapa liar kocokannya
+    stir = Math.min(1.3, 0.5 + (stir - 0.5) * f);
+    return { stir, omega: 0, dir, w: clamp01((stir - 0.55) / 0.3) };
+  }
+
+  /* ---------- physics ---------- */
+  function physics(dt, c) {
+    const sub = 3, h = dt / sub, stir = c.stir, om = c.omega || 0, dir = c.dir || 1;
+    const G = 5.6 * R, JET = 11 * R, SW = 3.4 * R, KICK = 10 * R, E = 0.92;
+    const VMAX = Math.max(4 * R, Math.abs(om) * R * 1.05 + 0.5 * R);
+    const drag = 0.5 - 0.3 * stir;
+    const jet = Math.max(0, (stir - 0.3) / 0.7);
+    const wallIn = R * 0.055;
+    for (let s = 0; s < sub; s++) {
+      for (const b of balls) {
+        if (b.chosen) continue;
+        const dx = b.x - cx, dy = b.y - cy, d = Math.hypot(dx, dy) || 1;
+        let ax = (-dy / d) * SW * stir * dir, ay = G + (dx / d) * SW * stir * dir;
+        if (om) { // roda roulette: seret bola mengikuti putaran + dorongan keluar (sentrifugal)
+          const tx = -dy / d, ty = dx / d, vt = b.vx * tx + b.vy * ty;
+          const acc = (om * Math.min(d, R * 0.92) - vt) * 3.2, cf = om * om * d * 0.6;
+          ax += tx * acc + (dx / d) * cf; ay += ty * acc + (dy / d) * cf;
+        }
+        if (jet > 0) {
+          const ox = Math.abs(dx) / (R * 0.6);
+          if (ox < 1 && dy > -R * 0.2) ay -= JET * jet * (1 - ox * 0.6);
+        }
+        ax += (Math.random() - 0.5) * KICK * stir; ay += (Math.random() - 0.5) * KICK * stir;
+        b.vx += ax * h; b.vy += ay * h;
+        const k = 1 - drag * h; b.vx *= k; b.vy *= k;
+        const v = Math.hypot(b.vx, b.vy);
+        if (v > VMAX) { const q = VMAX / v; b.vx *= q; b.vy *= q; }
+        b.x += b.vx * h; b.y += b.vy * h;
+      }
+      for (let i = 0; i < balls.length; i++) {
+        const a = balls[i]; if (a.chosen) continue;
+        for (let j = i + 1; j < balls.length; j++) {
+          const c2 = balls[j]; if (c2.chosen) continue;
+          const dx = c2.x - a.x, dy = c2.y - a.y, min = a.r + c2.r, d2 = dx * dx + dy * dy;
+          if (d2 >= min * min) continue;
+          const d = Math.sqrt(d2) || 0.001, nx = dx / d, ny = dy / d, ov = (min - d) / 2;
+          a.x -= nx * ov; a.y -= ny * ov; c2.x += nx * ov; c2.y += ny * ov;
+          const vn = (c2.vx - a.vx) * nx + (c2.vy - a.vy) * ny;
+          if (vn < 0) { const j2 = -(1 + E) * vn / 2; a.vx -= j2 * nx; a.vy -= j2 * ny; c2.vx += j2 * nx; c2.vy += j2 * ny; }
+        }
+      }
+      for (const b of balls) {
+        if (b.chosen) continue;
+        const dx = b.x - cx, dy = b.y - cy, d = Math.hypot(dx, dy), lim = R - b.r - wallIn;
+        if (d > lim) {
+          const nx = dx / d, ny = dy / d;
+          b.x = cx + nx * lim; b.y = cy + ny * lim;
+          const vn = b.vx * nx + b.vy * ny;
+          if (vn > 0) { b.vx -= (1 + 0.85) * vn * nx; b.vy -= (1 + 0.85) * vn * ny; }
+          if (om) { // gesekan dinding yang berputar membawa bola
+            const tx = -ny, ty = nx, vt = b.vx * tx + b.vy * ty, vw = om * R;
+            const dv = (vw - vt) * Math.min(1, 7 * h);
+            b.vx += dv * tx; b.vy += dv * ty;
+          }
+        }
+      }
+    }
+    for (const b of balls) {
+      if (b.chosen) continue;
+      // saat berputar cepat bola menggelinding; saat santai nama ditarik kembali tegak supaya terbaca
+      const roll = ((b.vx / b.r) * 0.6 - b.av) * 8;
+      const upright = -norm(b.ang) * 30 - b.av * 6;
+      b.av += (roll * c.w + upright * (1 - c.w)) * dt;
+      b.ang += b.av * dt;
+    }
+  }
+
+  /* ---------- draw ---------- */
+  function rr(x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function drawBase() {
+    const neckTop = cy + R * 0.82, neckBot = cy + R * 1.13, footBot = cy + R * 1.25;
+    ctx.fillStyle = 'rgba(0,0,0,.22)';
+    ctx.beginPath(); ctx.ellipse(cx, footBot + R * 0.03, R * 0.85, R * 0.07, 0, 0, TAU); ctx.fill();
+    const g = ctx.createLinearGradient(cx - R * 0.8, 0, cx + R * 0.8, 0);
+    g.addColorStop(0, '#9a6400'); g.addColorStop(0.3, '#ffe28a'); g.addColorStop(0.55, '#f2b01e'); g.addColorStop(1, '#8a5a00');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.moveTo(cx - R * 0.45, neckTop); ctx.lineTo(cx + R * 0.45, neckTop);
+    ctx.lineTo(cx + R * 0.62, neckBot); ctx.lineTo(cx - R * 0.62, neckBot); ctx.closePath(); ctx.fill();
+    rr(cx - R * 0.78, neckBot - R * 0.02, R * 1.56, footBot - neckBot + R * 0.02, R * 0.06); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.35)';
+    rr(cx - R * 0.72, neckBot + R * 0.01, R * 1.44, R * 0.025, R * 0.012); ctx.fill();
+  }
+  function drawBulbs(now) {
+    const n = 30, rb = R * 1.085, speed = busy ? 9 : 2.2;
+    const phase = Math.floor(now / 1000 * speed);
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * TAU - Math.PI / 2;
+      const on = ((i + phase) % 3) === 0;
+      const x = cx + Math.cos(a) * rb, y = cy + Math.sin(a) * rb;
+      const pink = i % 2 === 0;
+      ctx.save();
+      if (on) { ctx.shadowColor = pink ? '#ff5a70' : '#ffd766'; ctx.shadowBlur = 12; }
+      ctx.fillStyle = on ? (pink ? '#ff6f83' : '#ffe08a') : (pink ? 'rgba(200,40,63,.55)' : 'rgba(180,120,10,.55)');
+      ctx.beginPath(); ctx.arc(x, y, Math.max(2.4, S * 0.0125), 0, TAU); ctx.fill();
+      ctx.restore();
+    }
+  }
+  function drawBand() {
+    // pita roda roulette di tepi dalam kaca; ikut berputar
+    const n = 36, r0 = R * 0.945, r1 = R;
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(cageAng);
+    for (let i = 0; i < n; i++) {
+      const a0 = i * TAU / n, a1 = a0 + TAU / n;
+      ctx.beginPath(); ctx.arc(0, 0, r1, a0, a1); ctx.arc(0, 0, r0, a1, a0, true); ctx.closePath();
+      ctx.fillStyle = i === 0 ? '#1fa35b' : (i % 2 ? 'rgba(212,16,26,.85)' : 'rgba(12,22,22,.82)');
+      ctx.fill();
+    }
+    ctx.restore();
+    ctx.strokeStyle = 'rgba(255,215,102,.85)'; ctx.lineWidth = Math.max(1, R * 0.008);
+    ctx.beginPath(); ctx.arc(cx, cy, r0, 0, TAU); ctx.stroke();
+  }
+  function drawRays(now, p) {
+    ctx.save();
+    ctx.translate(cx, cy - R * 0.06); ctx.rotate(now / 7000);
+    const g = ctx.createRadialGradient(0, 0, R * 0.15, 0, 0, R * 1.1);
+    g.addColorStop(0, `rgba(255,232,140,${0.6 * p})`); g.addColorStop(1, 'rgba(255,232,140,0)');
+    ctx.fillStyle = g;
+    const n = 14;
+    for (let i = 0; i < n; i++) {
+      const a0 = i * TAU / n; ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, R * 1.1, a0, a0 + TAU / n * 0.5); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+  function drawBall(b) {
+    const r = b.r; if (r < 1) return;
+    ctx.save();
+    ctx.globalAlpha = b.alpha;
+    if (b.glow) { ctx.shadowColor = 'rgba(255,220,100,.95)'; ctx.shadowBlur = R * 0.16; }
+    const g = ctx.createRadialGradient(b.x - r * 0.35, b.y - r * 0.4, r * 0.08, b.x, b.y, r);
+    g.addColorStop(0, b.cLight); g.addColorStop(0.55, b.c); g.addColorStop(1, b.cDark);
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, TAU); ctx.fill();
+    ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
+    ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.ang);
+    const lab = b.label, fs = lab.k * r, lh = fs * 1.12, y0 = -(lab.lines.length - 1) * lh / 2;
+    ctx.font = `600 ${fs}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round'; ctx.lineWidth = Math.max(1.5, fs * 0.17); ctx.strokeStyle = 'rgba(15,5,30,.55)'; ctx.fillStyle = '#fff';
+    lab.lines.forEach((ln, i) => { ctx.strokeText(ln, 0, y0 + i * lh); ctx.fillText(ln, 0, y0 + i * lh); });
+    ctx.restore();
+    ctx.fillStyle = 'rgba(255,255,255,.34)';
+    ctx.beginPath(); ctx.ellipse(b.x - r * 0.34, b.y - r * 0.5, r * 0.34, r * 0.17, -0.6, 0, TAU); ctx.fill();
+    if (b.hot) {
+      ctx.shadowColor = '#fff'; ctx.shadowBlur = 10;
+      ctx.lineWidth = Math.max(2, r * 0.13); ctx.strokeStyle = '#fff';
+      ctx.beginPath(); ctx.arc(b.x, b.y, r, 0, TAU); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function drawChosenBadge(b, pos, final) {
+    const r = b.r, bx = b.x + r * 0.74, by = b.y - r * 0.74, br = r * 0.3;
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 6;
+    const g = ctx.createLinearGradient(0, by - br, 0, by + br); g.addColorStop(0, '#ffe08a'); g.addColorStop(1, '#f2b01e');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by, br, 0, TAU); ctx.fill();
+    ctx.shadowBlur = 0; ctx.fillStyle = '#4a3300'; ctx.font = `700 ${br * 1.15}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(String(pos), bx, by + br * 0.06);
+    if (final) { ctx.font = `${r * 0.55}px sans-serif`; ctx.fillText('👑', b.x, b.y - r * 1.12); }
+    ctx.restore();
+  }
+  function drawGlass() {
+    let g = ctx.createRadialGradient(cx, cy, R * 0.62, cx, cy, R);
+    g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(255,255,255,.24)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fill();
+    const rg = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
+    rg.addColorStop(0, 'rgba(255,255,255,.95)'); rg.addColorStop(0.5, 'rgba(255,255,255,.25)'); rg.addColorStop(1, 'rgba(150,215,255,.7)');
+    ctx.lineWidth = Math.max(3, R * 0.03); ctx.strokeStyle = rg;
+    ctx.beginPath(); ctx.arc(cx, cy, R - 1.5, 0, TAU); ctx.stroke();
+    ctx.save();
+    ctx.translate(cx - R * 0.4, cy - R * 0.54); ctx.rotate(-0.62);
+    const hg = ctx.createLinearGradient(-R * 0.34, 0, R * 0.34, 0);
+    hg.addColorStop(0, 'rgba(255,255,255,.7)'); hg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = hg; ctx.beginPath(); ctx.ellipse(0, 0, R * 0.34, R * 0.11, 0, 0, TAU); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = 'rgba(255,255,255,.55)';
+    ctx.beginPath(); ctx.arc(cx - R * 0.72, cy - R * 0.14, R * 0.028, 0, TAU); ctx.fill();
+    ctx.strokeStyle = 'rgba(140,220,255,.4)'; ctx.lineWidth = R * 0.05; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(cx, cy, R * 0.93, 0.15 * Math.PI, 0.62 * Math.PI); ctx.stroke();
+  }
+
+  function drawGlobe(now) {
+    ctx.clearRect(0, 0, W, H);
+    drawBase();
+    drawBulbs(now);
+    const bg = ctx.createRadialGradient(cx - R * 0.25, cy - R * 0.3, R * 0.1, cx, cy, R);
+    bg.addColorStop(0, theme.a); bg.addColorStop(1, theme.b);
+    ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fill();
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, R - 1, 0, TAU); ctx.clip();
+    drawBand();
+    if (rv) drawRays(now, rv.static ? 1 : Math.min(1, rv.p * 1.3));
+    const dim = rv ? 0.55 : 1;
+    for (const b of balls) { if (b.chosen) continue; b.alpha = dim; drawBall(b); }
+    for (const b of balls) { if (!b.chosen) continue; drawBall(b); drawChosenBadge(b, rv.pos, rv.final); }
+    for (const l of leaving) drawBall(l.b);
+    ctx.restore();
+    drawGlass();
+  }
+
+  /* ---------- update ---------- */
+  function updateGlobe(now, dt) {
+    if (sp) {
+      const e = now - sp.t0;
+      while (sp && sp.idx < sp.ticks.length && e >= sp.ticks[sp.idx].t) { onTick(sp.ticks[sp.idx], sp.idx); sp.idx++; }
+      if (sp && e >= sp.T) beginReveal(now);
+    }
+    const c = makeCtl(now);
+    physics(dt, c);
+    cageAng += (c.omega ? c.omega : c.dir * 0.35 * c.stir) * dt;
+
+    if (rv) {
+      const b = rv.b;
+      if (rv.static) {
+        b.x = cx; b.y = cy - R * 0.06 + Math.sin(now / 500) * R * 0.012; b.r = rv.r1; b.ang = 0;
+      } else if (!rv.fin) {
+        const p = Math.min(1, (now - rv.t0) / 1100);
+        const e = easeOutBack(p), q = easeOutCubic(p);
+        b.x = rv.x0 + (cx - rv.x0) * e; b.y = rv.y0 + ((cy - R * 0.06) - rv.y0) * e;
+        b.r = rv.r0 + (rv.r1 - rv.r0) * q; b.ang = rv.a0 * (1 - q); rv.p = p;
+        if (p >= 1) { rv.fin = true; onRevealDone(rv.final, rv.b.name); }
+      } else {
+        b.x = cx; b.y = cy - R * 0.06 + Math.sin(now / 500) * R * 0.012; b.r = rv.r1; b.ang = 0;
+      }
+    }
+    for (const l of leaving) {
+      const p = Math.min(1, (now - l.t0) / 380);
+      l.b.alpha = 1 - p; l.b.r = l.r0 * (1 + 0.35 * p);
+      if (p >= 1) l.dead = true;
+    }
+    if (leaving.some((l) => l.dead)) leaving = leaving.filter((l) => !l.dead);
+
+  }
+
+  function updateAuto(now) {
+    // mode otomatis: lanjut ke nomor berikutnya setelah jeda
+    if (autoRun && !busy && !isDone()) {
+      const left = autoNextAt - now;
+      if (left <= 0) startSpin();
+      else {
+        const s = Math.ceil(left / 1000);
+        if (s <= 3 && s !== lastCd) { lastCd = s; setTicker(curPos(), `Mulai dalam ${s}…`, 'wait'); }
+      }
+    }
+  }
+
+
+  /* ================= roda nama ================= */
+  const WPAL = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7'];
+  const GOLD_SLICE = '#eab308';
+  function wheelColors(list) {
+    list.forEach((sl, i) => { sl.color = WPAL[i % 6]; });
+    const n = list.length;
+    if (n > 1 && list[n - 1].color === list[0].color) list[n - 1].color = WPAL[(n - 1 + 3) % 6];
+  }
+  function makeWheel() {
+    wheel = { slices: [], theta: rnd(628) / 100, kick: 0, lastIdx: -1, reveal: null };
+    if (isDone()) {
+      wheel.slices = [{ name: state.results[1], wgt: 1, dying: false }];
+      wheel.theta = -Math.PI;
+      wheel.reveal = { static: true, idx: 0, pos: 1, final: true, t0: -1e9, fin: true };
+    } else wheel.slices = remaining().map((name) => ({ name, wgt: 1, dying: false }));
+    wheelColors(wheel.slices);
+  }
+  function sliceAngles() {
+    const tot = wheel.slices.reduce((a, x) => a + x.wgt, 0) || 1;
+    let acc = 0;
+    return wheel.slices.map((x) => { const a0 = acc / tot * TAU; acc += x.wgt; return [a0, acc / tot * TAU]; });
+  }
+  function sliceAtTheta(th) {
+    const ang = sliceAngles(), phi = ((-th) % TAU + TAU) % TAU;
+    for (let i = 0; i < ang.length; i++) if (phi >= ang[i][0] && phi < ang[i][1]) return i;
+    return Math.max(0, ang.length - 1);
+  }
+
+  function startWheelSpin(now) {
+    const remSet = new Set(remaining());
+    wheel.reveal = null;
+    wheel.slices.forEach((x) => { if (!remSet.has(x.name)) x.dying = true; });
+    const alive = wheel.slices.filter((x) => !x.dying);
+    wheelColors(alive);
+    const pos = curPos();
+    const winner = alive[rnd(alive.length)].name;
+    const wIdx = alive.findIndex((x) => x.name === winner);
+    const a = TAU / alive.length, u = 0.18 + 0.64 * (rnd(1000) / 1000);
+    const phi = (wIdx + u) * a, dir = cfg.dir, th0 = wheel.theta;
+    const m = ((dir * (-phi - th0)) % TAU + TAU) % TAU;
+    const D = cfg.duration * 1000;
+    const turns = Math.max(2, Math.round(cfg.speed * 0.6 * (D / 1000) / 3.6));
+    const th1 = th0 + dir * (turns * TAU + m);
+    sp = { wheel: true, t0: now, winner, pos, th0, th1, D, T: D + 450, locked: false, lastSnd: 0 };
+    wheel.lastIdx = -1;
+    setTicker(pos, '· · ·', 'running');
+    sndWhoosh(); refreshUI();
+  }
+
+  function updateWheel(now, dt) {
+    const Wl = wheel; if (!Wl) return;
+    for (const x of Wl.slices) if (x.dying) x.wgt -= dt / 0.35;
+    if (Wl.slices.some((x) => x.dying && x.wgt <= 0)) { Wl.slices = Wl.slices.filter((x) => !(x.dying && x.wgt <= 0)); Wl.lastIdx = -1; }
+    Wl.kick = Math.max(0, Wl.kick - dt * 7);
+    if (sp && sp.wheel) {
+      const e = now - sp.t0, p = Math.min(1, e / sp.D);
+      Wl.theta = sp.th0 + (sp.th1 - sp.th0) * (1 - Math.pow(1 - p, 3.6));
+      if (!sp.locked) {
+        const idx = sliceAtTheta(Wl.theta);
+        if (idx !== Wl.lastIdx) {
+          if (Wl.lastIdx !== -1) { Wl.kick = 1; if (now - sp.lastSnd > 45) { beep(720, 0.03, 'square', 0.03); sp.lastSnd = now; } }
+          Wl.lastIdx = idx;
+          if (Wl.slices[idx]) setTicker(sp.pos, Wl.slices[idx].name, 'running', false);
+        }
+      }
+      if (!sp.locked && p >= 1) {
+        sp.locked = true; Wl.theta = sp.th1;
+        setTicker(sp.pos, sp.winner, 'locked'); beep(880, 0.35, 'sine', 0.08);
+      }
+      if (e >= sp.T) beginRevealWheel(now);
+    } else if (!Wl.reveal) {
+      Wl.theta += cfg.dir * 0.08 * dt;
+    }
+    if (Wl.reveal && !Wl.reveal.fin && now - Wl.reveal.t0 >= 900) {
+      Wl.reveal.fin = true; onRevealDone(Wl.reveal.final, Wl.slices[Wl.reveal.idx] ? Wl.slices[Wl.reveal.idx].name : '');
+    }
+  }
+
+  function beginRevealWheel(now) {
+    const winner = sp.winner, pos = sp.pos;
+    state.results[pos] = winner; save(); markWon(winner);
+    const idx = wheel.slices.findIndex((x) => x.name === winner);
+    wheel.reveal = { t0: now, idx, pos, final: pos === 1, fin: false };
+    sp = null;
+    fillRow(pos, winner, true); markActive();
+    sndReveal(pos === 1);
+  }
+
+  function ratioOf(t) {
+    let v = wRatio.get(t);
+    if (v == null) { ctx.font = '700 100px ' + FONT; v = ctx.measureText(t).width / 100; wRatio.set(t, v); }
+    return v;
+  }
+  function drawRaysAt(x, y, rad, now, alpha) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(now / 7000);
+    const g = ctx.createRadialGradient(0, 0, rad * 0.1, 0, 0, rad);
+    g.addColorStop(0, `rgba(255,236,150,${0.6 * alpha})`); g.addColorStop(1, 'rgba(255,236,150,0)');
+    ctx.fillStyle = g;
+    const n = 14;
+    for (let i = 0; i < n; i++) { const a0 = i * TAU / n; ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, rad, a0, a0 + TAU / n * 0.5); ctx.closePath(); ctx.fill(); }
+    ctx.restore();
+  }
+
+  function drawWheelStage(now) {
+    ctx.clearRect(0, 0, W, H);
+    if (!wheel) return;
+    const r = WR, inner = r * 0.945, sl = wheel.slices, n = sl.length, ang = sliceAngles(), rvl = wheel.reveal;
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = r * 0.09; ctx.shadowOffsetY = r * 0.035;
+    ctx.fillStyle = '#f8fafc'; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.fill();
+    ctx.restore();
+
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(wheel.theta); ctx.lineJoin = 'round';
+    const slicePath = (i) => { ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, inner, ang[i][0], ang[i][1]); ctx.closePath(); };
+    for (let i = 0; i < n; i++) {
+      if (ang[i][1] - ang[i][0] < 1e-3) continue;
+      slicePath(i); ctx.fillStyle = sl[i].color; ctx.fill();
+      if (n > 1) { ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(1.5, r * 0.009); ctx.stroke(); }
+    }
+    if (rvl) for (let i = 0; i < n; i++) if (i !== rvl.idx) { slicePath(i); ctx.fillStyle = 'rgba(15,23,42,.5)'; ctx.fill(); }
+    // nama di tiap irisan (ditulis memanjang dari tengah ke tepi)
+    const rOut = inner * 0.94, rIn = r * 0.21, avail = rOut - rIn;
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    for (let i = 0; i < n; i++) {
+      const [a0, a1] = ang[i], span = a1 - a0; if (span < 0.02) continue;
+      const name = sl[i].name, ratio = ratioOf(name);
+      let fs = Math.min(r * 0.125, avail / ratio);
+      for (let k = 0; k < 8; k++) { if (fs <= span * (rOut - ratio * fs) * 0.72) break; fs *= 0.9; }
+      let t = name;
+      if (fs < 7) { fs = 7; if (ratio * fs > avail) { while (t.length > 1 && ratioOf(t + '…') * fs > avail) t = t.slice(0, -1); t += '…'; } }
+      ctx.save(); ctx.rotate((a0 + a1) / 2);
+      ctx.globalAlpha = (rvl && i !== rvl.idx) ? 0.55 : 1;
+      ctx.font = `700 ${fs}px ${FONT}`;
+      ctx.fillStyle = sl[i].color === GOLD_SLICE ? '#2b1d00' : '#fff';
+      ctx.fillText(t, rOut, 0);
+      ctx.restore();
+    }
+    if (rvl && sl[rvl.idx]) {
+      slicePath(rvl.idx); ctx.save(); ctx.shadowColor = 'rgba(255,220,100,.95)'; ctx.shadowBlur = r * 0.06;
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(3, r * 0.022); ctx.stroke(); ctx.restore();
+    }
+    for (let i = 0; i < n; i++) {
+      const a = ang[i][0];
+      ctx.beginPath(); ctx.arc(Math.cos(a) * r * 0.972, Math.sin(a) * r * 0.972, Math.max(1.6, r * 0.012), 0, TAU);
+      ctx.fillStyle = '#64748b'; ctx.fill();
+    }
+    ctx.restore();
+
+    if (rvl) {
+      const al = rvl.static ? 1 : Math.min(1, (now - rvl.t0) / 500);
+      ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, inner, 0, TAU); ctx.clip(); drawRaysAt(cx, cy, inner, now, al * 0.7); ctx.restore();
+    }
+
+    // tombol tengah
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = r * 0.04;
+    ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.arc(cx, cy, r * 0.15, 0, TAU); ctx.fill();
+    ctx.shadowBlur = 0; ctx.lineWidth = r * 0.03; ctx.strokeStyle = '#fff'; ctx.stroke();
+    if (!busy) {
+      ctx.fillStyle = '#fff'; ctx.font = `700 ${r * 0.062}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('Putar', cx, cy + r * 0.004);
+    }
+    ctx.restore();
+
+    // penunjuk di kanan
+    const px = cx + r * 1.1, tipx = cx + r * 0.9, hh = r * 0.085;
+    ctx.save(); ctx.translate(px, cy); ctx.rotate(-cfg.dir * wheel.kick * 0.4);
+    ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = r * 0.03; ctx.shadowOffsetY = r * 0.01;
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(tipx - px, 0); ctx.lineTo(0, -hh); ctx.lineTo(0, hh); ctx.closePath(); ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.moveTo(tipx - px + r * 0.03, 0); ctx.lineTo(-r * 0.03, -hh * 0.58); ctx.lineTo(-r * 0.03, hh * 0.58); ctx.closePath(); ctx.fill();
+    ctx.restore();
+
+    if (rvl && sl[rvl.idx]) drawWinnerBanner(now, rvl, sl[rvl.idx].name);
+  }
+
+  function drawWinnerBanner(now, rvl, name) {
+    const r = WR, p = rvl.static ? 1 : clamp01((now - rvl.t0) / 650); if (p <= 0) return;
+    const sc = easeOutBack(p), bw = r * 1.55, bh = r * 0.42;
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(sc, sc);
+    ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = r * 0.06; ctx.shadowOffsetY = r * 0.02;
+    const g = ctx.createLinearGradient(0, -bh / 2, 0, bh / 2); g.addColorStop(0, '#ffe08a'); g.addColorStop(1, '#f2b01e');
+    ctx.fillStyle = g; rr(-bw / 2, -bh / 2, bw, bh, bh * 0.3); ctx.fill();
+    ctx.shadowColor = 'transparent';
+    const bx = -bw / 2 + bh * 0.52, br = bh * 0.34;
+    ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.arc(bx, 0, br, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#ffd766'; ctx.font = `700 ${br * 1.15}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(String(rvl.pos), bx, br * 0.06);
+    const tx0 = bx + br * 1.25, tw = bw / 2 - tx0 - bh * 0.18, tc = (tx0 + bw / 2 - bh * 0.18) / 2;
+    let fs = Math.min(r * 0.17, tw / ratioOf(name)), t = name;
+    if (fs < r * 0.075) { fs = r * 0.075; while (t.length > 1 && ratioOf(t + '…') * fs > tw) t = t.slice(0, -1); if (t !== name) t += '…'; }
+    ctx.fillStyle = '#2b1d00'; ctx.font = `700 ${fs}px ${FONT}`; ctx.fillText(t, tc, bh * 0.02);
+    if (rvl.final) { ctx.font = `${bh * 0.62}px sans-serif`; ctx.fillText('👑', 0, -bh * 0.78); }
+    ctx.restore();
+  }
+
+  function update(now, dt) {
+    if (cfg.view === 'wheel') updateWheel(now, dt); else updateGlobe(now, dt);
+    updateAuto(now);
+  }
+  function draw(now) { if (cfg.view === 'wheel') drawWheelStage(now); else drawGlobe(now); }
+
+  let lastT = performance.now();
+  function frame(now) {
+    const dt = Math.min(0.033, (now - lastT) / 1000); lastT = now;
+    if (running) { update(now, dt); draw(now); }
+    requestAnimationFrame(frame);
+  }
+
+  /* ================= antarmuka ================= */
+  const el = {
+    setup: $('#viewSetup'), draw: $('#viewDraw'), ticker: $('#ticker'), tkLabel: $('#tkLabel'), tkNum: $('#tkNum'), tkName: $('#tkName'),
+    btnSpin: $('#btnSpin'), done: $('#doneActions'), body: $('#resBody'), title: $('#appTitle'), reset: $('#btnReset'),
+    btnSettings: $('#btnSettings'), slotSetup: $('#settingsSlotSetup'), slotDraw: $('#settingsSlotDraw'), box: $('#settingsBox'),
+  };
+
+  function setTicker(pos, name, cls, flip) {
+    el.tkLabel.textContent = pos === 1 ? 'Prize' : 'Nomor';
+    el.tkNum.textContent = pos;
+    el.tkName.textContent = name;
+    el.ticker.className = 'ticker' + (cls ? ' ' + cls : '');
+    if (flip) { el.tkName.classList.remove('flip'); void el.tkName.offsetWidth; el.tkName.classList.add('flip'); }
+    else el.tkName.classList.remove('flip');
+  }
+
+  /* ---------- tabel hasil ---------- */
+  const prizeLabel = (p) => p + (p % 100 >= 11 && p % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[p % 10] || 'th')) + ' Prize';
+  function mk(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  function buildResults() {
+    const n = slots(), top = Math.min(cfg.prizes, n), st = n - top;
+    el.body.innerHTML = '';
+    const d = new Date(state.date || Date.now());
+    $('#resTitle').textContent = 'Live draw ' + (state.title || 'Undian Arisan');
+    $('#resDate').textContent = `hari ${DAYS[d.getDay()]}, tanggal ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+
+    const box = mk('div', 'prz-box');
+    for (let p = 1; p <= top; p++) {
+      const row = mk('div', 'prz'); row.dataset.pos = p;
+      const val = mk('div', 'val'); val.append(mk('span', '', '—'));
+      row.append(mk('div', 'lbl', prizeLabel(p)), val); box.append(row);
+    }
+    el.body.append(box);
+    const COLS = 4;
+    const cellGrid = (from, to) => {
+      // urut dari kecil ke besar: angka kecil (dekat Prize) di kiri-atas,
+      // angka besar (undian pertama) berakhir tepat di pojok kanan-bawah
+      const g = mk('div', 'grid4');
+      const count = to - from + (to >= from ? 1 : 0); // jumlah kotak, from..to naik
+      const blanks = count % COLS ? COLS - (count % COLS) : 0;
+      for (let i = 0; i < blanks; i++) g.append(mk('div', 'cell blank'));
+      for (let p = from; p <= to; p++) {
+        const c = mk('div', 'cell'); c.dataset.pos = p;
+        c.append(mk('span', 'cn', String(p)), mk('span', 'cw', '—')); g.append(c);
+      }
+      return g;
+    };
+    if (st > 0) el.body.append(mk('div', 'band', 'Starter Prize'), cellGrid(top + 1, n));
+    for (const p of Object.keys(state.results)) fillRow(+p, state.results[p], false);
+    markActive();
+  }
+  function fillRow(pos, name, animate) {
+    const row = el.body.querySelector(`[data-pos="${pos}"]`); if (!row) return;
+    row.classList.add('filled');
+    if (row.classList.contains('cell')) {
+      row.querySelector('.cw').textContent = name; row.title = name;
+      row.style.borderLeftColor = colorOf(name).solid;
+    } else row.querySelector('.val span').textContent = name;
+    if (animate) { row.classList.remove('pop'); void row.offsetWidth; row.classList.add('pop'); }
+  }
+  function markActive() {
+    el.body.querySelectorAll('.active').forEach((x) => x.classList.remove('active'));
+    if (!isDone()) { const row = el.body.querySelector(`[data-pos="${curPos()}"]`); if (row) row.classList.add('active'); }
+  }
+
+  function refreshUI() {
+    const done = isDone(), pos = curPos();
+    el.btnSpin.hidden = done; el.done.hidden = !done;
+    if (done) return;
+    const fin = pos === 1;
+    if (cfg.auto) {
+      if (autoRun) { el.btnSpin.className = 'btn big ghost'; el.btnSpin.textContent = 'Hentikan otomatis'; el.btnSpin.disabled = false; }
+      else if (busy) { el.btnSpin.className = 'btn big primary'; el.btnSpin.textContent = 'Memutar…'; el.btnSpin.disabled = true; }
+      else {
+        el.btnSpin.className = 'btn big ' + (fin ? 'gold' : 'primary'); el.btnSpin.disabled = false;
+        el.btnSpin.textContent = Object.keys(state.results).length ? 'Lanjutkan otomatis' : 'Mulai otomatis';
+      }
+    } else {
+      el.btnSpin.disabled = busy;
+      el.btnSpin.className = 'btn big ' + (fin ? 'gold' : 'primary');
+      el.btnSpin.textContent = busy ? 'Memutar…' : (fin ? 'Umumkan Prize 1' : `Putar untuk nomor ${pos}`);
+    }
+  }
+
+  function buildStage() {
+    balls = []; leaving = []; rv = null; sp = null; busy = false; autoRun = false; wheel = null;
+    resize(); readTheme();
+    cv.setAttribute('aria-label', cfg.view === 'wheel' ? 'Roda nama anggota arisan' : 'Globe kaca berisi bola nama anggota arisan');
+    if (cfg.view === 'wheel') { makeWheel(); return; }
+    remaining().forEach((nm) => balls.push(makeBall(nm)));
+    const c = makeCtl(performance.now());
+    for (let i = 0; i < 260; i++) physics(1 / 60, c);
+    if (isDone()) {
+      const nm = state.results[1], b = makeBall(nm);
+      b.chosen = true; b.glow = true; b.r = R * 0.34;
+      balls.push(b); rv = { b, static: true, p: 1, pos: 1, final: true, r1: R * 0.34, fin: true };
+    }
+  }
+
+  function idleTicker() {
+    if (isDone()) setTicker(1, '🏆 ' + state.results[1], 'locked');
+    else if (Object.keys(state.results).length) setTicker(curPos(), 'Lanjut, tekan putar', 'wait');
+    else setTicker(curPos(), 'Siap diputar', 'wait');
+  }
+  function rebuildStage() {
+    $('#globeWrap').classList.remove('spinning');
+    buildStage(); idleTicker(); refreshUI();
+  }
+
+  function enterDraw() {
+    el.setup.hidden = true; el.draw.hidden = false; el.reset.hidden = false; el.btnSettings.hidden = false;
+    el.slotDraw.append(el.box); el.slotDraw.hidden = true; el.btnSettings.setAttribute('aria-expanded', 'false');
+    el.title.textContent = state.title || 'Undian Arisan';
+    document.title = state.title || 'Undian Arisan';
+    buildResults();
+    buildStage();
+    idleTicker();
+    updateSlotSummary();
+    refreshUI();
+    running = true;
+  }
+
+  /* ---------- putaran ---------- */
+  function onSpinBtn() {
+    if (isDone()) return;
+    if (cfg.auto) {
+      if (autoRun) {
+        autoRun = false;
+        if (!busy) setTicker(curPos(), 'Otomatis dihentikan', 'wait');
+        refreshUI(); return;
+      }
+      autoRun = true; lastCd = -1;
+      if (!busy) startSpin();
+      refreshUI(); return;
+    }
+    startSpin();
+  }
+
+  function startSpin() {
+    if (busy || isDone()) return;
+    ac();
+    busy = true;
+    const now = performance.now();
+    if (cfg.view === 'wheel') { startWheelSpin(now); return; }
+    if (rv) {
+      const b = rv.b;
+      if (cfg.drawMode === 'ulang') {
+        // tetap berpeluang: bola yang barusan menang dilepas kembali ke kolam, bukan dibuang.
+        b.chosen = false; b.glow = false; b.r = ballR();
+        b.vx += (rnd(1000) / 1000 - 0.5) * 2 * R; b.vy -= rnd(1000) / 1000 * 1.2 * R;
+      } else {
+        balls = balls.filter((x) => x !== b);
+        b.chosen = false; leaving.push({ b, t0: now, r0: b.r });
+      }
+      rv = null;
+    }
+    balls.forEach((b) => { b.hot = false; b.glow = false; b.alpha = 1; });
+    const rem = remaining(), pos = curPos();
+    const winner = rem[rnd(rem.length)];
+    const pool = rem.length > 1 ? rem : state.names;
+    // urutan tick: berganti cepat lalu melambat sampai berhenti di pemenang; total mengikuti durasi pengaturan
+    const T0 = 250, tail = 800;
+    const span = Math.max(1200, cfg.duration * 1000 - T0 - tail);
+    const N = Math.max(15, Math.min(60, Math.round(cfg.duration * 5)));
+    const seq = [];
+    while (seq.length < N - 1) for (const nm of shuffle(pool)) { if (seq.length < N - 1 && nm !== seq[seq.length - 1]) seq.push(nm); }
+    if (seq[N - 2] === winner) seq[N - 2] = pool.find((x) => x !== winner) || winner;
+    seq.push(winner);
+    const ticks = [];
+    for (let k = 0; k < N; k++) { const u = k / (N - 1); ticks.push({ t: T0 + span * (0.3 * u + 0.7 * Math.pow(u, 4)), name: seq[k] }); }
+    sp = { t0: now, winner, ticks, idx: 0, T: ticks[N - 1].t + tail, pos };
+    for (const b of balls) { b.vx += (rnd(1000) / 1000 - 0.5) * 2 * R; b.vy -= rnd(1000) / 1000 * 1.2 * R; }
+    setTicker(pos, '· · ·', 'running');
+    $('#globeWrap').classList.add('spinning');
+    sndWhoosh();
+    refreshUI();
+  }
+
+  function onTick(tk, i) {
+    const last = i === sp.ticks.length - 1;
+    setTicker(sp.pos, tk.name, last ? 'locked' : 'running', !last);
+    for (const b of balls) b.hot = (b.name === tk.name);
+    if (last) beep(880, 0.35, 'sine', 0.08); else sndTick(i / sp.ticks.length);
+  }
+
+  function beginReveal(now) {
+    const winner = sp.winner, pos = sp.pos;
+    const b = balls.find((x) => x.name === winner);
+    state.results[pos] = winner; save(); markWon(winner);
+    balls.forEach((x) => { x.hot = false; });
+    b.chosen = true; b.glow = true; b.alpha = 1;
+    rv = { b, t0: now, x0: b.x, y0: b.y, r0: b.r, r1: R * 0.34, a0: norm(b.ang), pos, final: pos === 1, p: 0, fin: false };
+    sp = null;
+    fillRow(pos, winner, true); markActive();
+    sndReveal(pos === 1);
+  }
+
+  function onRevealDone(final, name) {
+    busy = false;
+    $('#globeWrap').classList.remove('spinning');
+    const r = cv.getBoundingClientRect();
+    const gx = r.left + cx * (r.width / W), gy = r.top + cy * (r.height / H);
+    if (final) {
+      burst(gx, gy, 140, 620, false);
+      burst(innerWidth * 0.1, innerHeight, 90, 1100, true);
+      burst(innerWidth * 0.9, innerHeight, 90, 1100, true);
+      rainUntil = performance.now() + 5000; startFx();
+      setTicker(1, '🏆 ' + name, 'locked');
+      autoRun = false;
+    } else {
+      burst(gx, gy, 70, 520, false);
+      if (autoRun) { autoNextAt = performance.now() + cfg.pause * 1000; lastCd = -1; }
+    }
+    refreshUI();
+  }
+
+  /* ================= pengaturan (form) ================= */
+  const RANGES = [
+    ['stDur', 'duration', 'stDurV', (v) => v + ' dtk'],
+    ['stSpeed', 'speed', 'stSpeedV', (v) => v + ' / 10'],
+    ['stPause', 'pause', 'stPauseV', (v) => v + ' dtk'],
+    ['stPrize', 'prizes', 'stPrizeV', (v) => String(v)],
+    ['stStart', 'starters', 'stStartV', (v) => String(v)],
+  ];
+  function updateSlotSummary() {
+    const box = $('#slotSummary'); if (!box) return;
+    const n = el.draw.hidden ? parseNames(inNames.value).length : total();
+    const pr = Math.min(cfg.prizes, n);
+    const restAll = Math.max(0, n - pr);
+    const st = cfg.starterMode === 'fixed' ? Math.min(cfg.starters, restAll) : restAll;
+    const left = Math.max(0, n - pr - st);
+    box.textContent = n
+      ? `${pr} Prize + ${st} Starter dari ${n} anggota` + (left > 0 ? `, ${left} anggota tidak diikutkan undian.` : '.')
+      : '';
+  }
+  function syncSettings() {
+    RANGES.forEach(([id, key, out, fmt]) => { $('#' + id).value = cfg[key]; $('#' + out).textContent = fmt(cfg[key]); });
+    document.querySelectorAll('.seg').forEach((seg) => {
+      const key = seg.dataset.key;
+      seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(String(cfg[key]) === b.dataset.v)));
+    });
+    $('#rowPause').hidden = !cfg.auto;
+    $('#rowStyle').hidden = cfg.view === 'wheel';
+    $('#rowStarters').hidden = cfg.starterMode !== 'fixed';
+    updateSlotSummary();
+  }
+  function onCfg(key) {
+    saveCfg(); syncSettings();
+    if (key === 'auto' && !cfg.auto) autoRun = false;
+    if (!el.draw.hidden) {
+      if (key === 'prizes' || key === 'starterMode' || key === 'starters') buildResults();
+      if (key === 'view' || key === 'drawMode') { sp = null; rv = null; busy = false; autoRun = false; rebuildStage(); return; }
+      refreshUI();
+    } else if (key === 'prizes' || key === 'starterMode' || key === 'starters') {
+      updateCount();
+    }
+  }
+  RANGES.forEach(([id, key]) => {
+    $('#' + id).addEventListener('input', (e) => { cfg[key] = +e.target.value; onCfg(key); });
+  });
+  document.querySelectorAll('.seg').forEach((seg) => {
+    seg.addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      const key = seg.dataset.key, v = b.dataset.v;
+      cfg[key] = (key === 'style' || key === 'view' || key === 'starterMode' || key === 'drawMode') ? v : key === 'dir' ? +v : v === 'true';
+      onCfg(key);
+    });
+  });
+  el.btnSettings.addEventListener('click', () => {
+    const open = el.slotDraw.hidden;
+    el.slotDraw.hidden = !open; el.btnSettings.setAttribute('aria-expanded', String(open));
+  });
+
+  /* ================= dashboard anggota (UI) ================= */
+  const viewRoster = $('#viewRoster'), btnRoster = $('#btnRoster'), rosterErr = $('#rosterErr');
+  const statusLabel = { aktif: 'Aktif · belum menang', pending: 'Menang · belum WD', selesai: 'Selesai · sudah WD' };
+  function toggleWD(name) {
+    if (!roster[name]) return;
+    roster[name].wd = !roster[name].wd; saveRoster(); renderRoster();
+  }
+  function removeFromRoster(name) { delete roster[name]; saveRoster(); renderRoster(); }
+  function renderRoster() {
+    const list = $('#rosterList'); list.innerHTML = '';
+    const names = Object.keys(roster).sort((a, b) => a.localeCompare(b, 'id'));
+    if (!names.length) {
+      list.append(mk('p', 'hint', 'Belum ada anggota di dashboard. Anggota otomatis masuk ke sini setiap kali undian dimulai, atau tambahkan manual di atas.'));
+      return;
+    }
+    names.forEach((nm) => {
+      const r = roster[nm], st = rosterStatus(nm);
+      const row = mk('div', 'roster-row');
+      row.append(mk('span', 'roster-name', nm));
+      row.append(mk('span', 'roster-badge ' + st, statusLabel[st]));
+      const actions = mk('div', 'roster-actions');
+      if (r.menang) {
+        const wdBtn = mk('button', 'chip-btn small', r.wd ? 'Batal WD' : 'Tandai sudah WD');
+        wdBtn.type = 'button'; wdBtn.addEventListener('click', () => toggleWD(nm));
+        actions.append(wdBtn);
+      }
+      const delBtn = mk('button', 'chip-btn small warn', 'Hapus');
+      delBtn.type = 'button'; delBtn.addEventListener('click', () => removeFromRoster(nm));
+      actions.append(delBtn);
+      row.append(actions);
+      list.append(row);
+    });
+  }
+  btnRoster.addEventListener('click', () => {
+    const open = viewRoster.hidden;
+    viewRoster.hidden = !open; btnRoster.setAttribute('aria-expanded', String(open));
+    if (open) { rosterErr.textContent = ''; renderRoster(); }
+  });
+  $('#btnRosterClose').addEventListener('click', () => { viewRoster.hidden = true; btnRoster.setAttribute('aria-expanded', 'false'); });
+  $('#btnRosterAdd').addEventListener('click', () => {
+    const inp = $('#rosterNewName'), nm = inp.value.trim(); rosterErr.textContent = '';
+    if (!nm) return;
+    if (roster[nm]) { rosterErr.textContent = 'Nama sudah ada di daftar.'; return; }
+    roster[nm] = { menang: false, wd: false, wonAt: null }; saveRoster(); inp.value = ''; renderRoster();
+  });
+  $('#rosterNewName').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#btnRosterAdd').click(); } });
+  $('#btnRosterUseNext').addEventListener('click', () => {
+    const names = eligibleNext(); rosterErr.textContent = '';
+    if (names.length < 2) { rosterErr.textContent = 'Minimal 2 anggota yang belum menang/belum WD untuk memulai undian baru.'; return; }
+    running = false; busy = false; sp = null; rv = null; parts = []; autoRun = false; wheel = null;
+    const prevTitle = state.title === 'Undian Arisan' ? '' : state.title;
+    state = { title: prevTitle, names: [], results: {}, active: false, date: Date.now() };
+    save();
+    inTitle.value = prevTitle; inNames.value = names.join('\n'); updateCount();
+    el.slotSetup.append(el.box);
+    el.draw.hidden = true; el.setup.hidden = false; el.reset.hidden = true; el.btnSettings.hidden = true; el.title.textContent = 'Undian Arisan';
+    $('#globeWrap').classList.remove('spinning');
+    viewRoster.hidden = true; btnRoster.setAttribute('aria-expanded', 'false');
+  });
+
+  /* ================= form setup ================= */
+  const inTitle = $('#inTitle'), inNames = $('#inNames'), errEl = $('#setupErr');
+  function parseNames(text) {
+    const raw = text.split(/[\n,;]+/).map((s) => s.replace(/^\s*\d+\s*[.)\-:]\s*/, '').trim().slice(0, 24)).filter(Boolean);
+    const seen = new Map();
+    return raw.map((nm) => { const key = nm.toLowerCase(), c = (seen.get(key) || 0) + 1; seen.set(key, c); return c > 1 ? `${nm} (${c})` : nm; });
+  }
+  function updateCount() {
+    const n = parseNames(inNames.value).length;
+    $('#nameCount').textContent = n + ' anggota';
+    const pr = Math.min(cfg.prizes, n), restAll = Math.max(0, n - pr);
+    const st = cfg.starterMode === 'fixed' ? Math.min(cfg.starters, restAll) : restAll;
+    const sl = pr + st;
+    $('#setupHint').textContent = n >= 2 ? `Undian dimulai dari nomor ${sl}, lalu turun sampai Prize 1.` : 'Undian dimulai dari nomor terakhir, lalu turun sampai Prize 1.';
+    errEl.textContent = '';
+    updateSlotSummary();
+  }
+  inNames.addEventListener('input', updateCount);
+  $('#btnSample').addEventListener('click', () => {
+    inNames.value = ['Siti', 'Budi', 'Ani', 'Dewi', 'Rudi', 'Ratna', 'Agus', 'Wati', 'Joko', 'Lina'].join('\n');
+    if (!inTitle.value.trim()) inTitle.value = 'Arisan Keluarga';
+    updateCount();
+  });
+  $('#btnShuffleNames').addEventListener('click', () => {
+    const lines = inNames.value.split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean);
+    if (lines.length < 2) { errEl.textContent = 'Isi minimal 2 nama dulu sebelum diacak.'; return; }
+    inNames.value = shuffleNoAdjacent(lines).join('\n');
+    updateCount();
+  });
+  $('#btnStart').addEventListener('click', () => {
+    const names = parseNames(inNames.value);
+    if (names.length < 2) { errEl.textContent = 'Isi minimal 2 nama anggota.'; return; }
+    if (names.length > MAX_NAMES) { errEl.textContent = `Maksimal ${MAX_NAMES} anggota. Kurangi ${names.length - MAX_NAMES} nama.`; return; }
+    state = { title: inTitle.value.trim() || 'Undian Arisan', names, results: {}, active: true, date: Date.now() };
+    save(); ensureRoster(names); enterDraw();
+  });
+
+  /* ================= tombol lain ================= */
+  el.btnSpin.addEventListener('click', onSpinBtn);
+  cv.addEventListener('click', (e) => {
+    if (cfg.view !== 'wheel' || el.draw.hidden) return;
+    const b = cv.getBoundingClientRect(), x = (e.clientX - b.left) * (W / b.width), y = (e.clientY - b.top) * (H / b.height);
+    if (Math.hypot(x - cx, y - cy) < WR * 0.16 && (!busy || (cfg.auto && autoRun))) onSpinBtn();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.code !== 'Space' || el.draw.hidden) return;
+    const t = document.activeElement && document.activeElement.tagName;
+    if (t === 'BUTTON' || t === 'INPUT' || t === 'TEXTAREA') return;
+    e.preventDefault(); if (!busy || (cfg.auto && autoRun)) onSpinBtn();
+  });
+
+  const btnSound = $('#btnSound');
+  btnSound.addEventListener('click', () => {
+    soundOn = !soundOn; btnSound.textContent = soundOn ? '🔊' : '🔇';
+    btnSound.setAttribute('aria-label', soundOn ? 'Suara aktif' : 'Suara mati'); if (soundOn) ac();
+  });
+
+  let resetTimer = null;
+  el.reset.addEventListener('click', () => {
+    const hasResults = Object.keys(state.results).length > 0;
+    if (hasResults && !el.reset.classList.contains('warn')) {
+      el.reset.classList.add('warn'); el.reset.textContent = 'Hapus hasil?';
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(() => { el.reset.classList.remove('warn'); el.reset.textContent = 'Ulang'; }, 3500);
+      return;
+    }
+    clearTimeout(resetTimer);
+    el.reset.classList.remove('warn'); el.reset.textContent = 'Ulang';
+    running = false; busy = false; sp = null; rv = null; parts = []; autoRun = false; wheel = null;
+    state.results = {}; state.active = false; save();
+    inTitle.value = state.title === 'Undian Arisan' ? '' : state.title;
+    inNames.value = state.names.join('\n'); updateCount();
+    el.slotSetup.append(el.box);
+    el.draw.hidden = true; el.setup.hidden = false; el.reset.hidden = true; el.btnSettings.hidden = true; el.title.textContent = 'Undian Arisan';
+    $('#globeWrap').classList.remove('spinning');
+  });
+
+  $('#btnCopy').addEventListener('click', async () => {
+    const lines = [state.title || 'Undian Arisan'];
+    for (let p = slots(); p >= 1; p--) lines.push(`${p === 1 ? 'Prize 1' : p}. ${state.results[p] || '-'}`);
+    const text = lines.join('\n'); const btn = $('#btnCopy');
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; }
+    catch (e) {
+      try { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.append(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e2) {}
+    }
+    btn.textContent = ok ? 'Tersalin' : 'Gagal menyalin, salin manual dari tabel hasil';
+    setTimeout(() => { btn.textContent = 'Salin hasil undian'; }, 2200);
+  });
+
+  /* ================= init ================= */
+  new ResizeObserver(() => { resize(); fxResize(); }).observe(wrap);
+  window.addEventListener('resize', fxResize);
+  try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme); } catch (e) {}
+  new MutationObserver(readTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { wRatio.clear(); balls.forEach((b) => { b.label = bestLabel(b.name); }); });
+
+  const footerYearEl = $('#footerYear'); if (footerYearEl) footerYearEl.textContent = new Date().getFullYear();
+  fxResize(); readTheme(); loadCfg(); load(); loadRoster(); syncSettings();
+  if (state.active && total() >= 2) enterDraw();
+  else {
+    if (state.names.length) { inNames.value = state.names.join('\n'); if (state.title !== 'Undian Arisan') inTitle.value = state.title; }
+    updateCount();
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
